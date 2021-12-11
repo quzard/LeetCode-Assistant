@@ -2,32 +2,36 @@
 // @name         LeetCode Assistant
 // @namespace    http://tampermonkey.net/
 // @version      1.0.8
+// @description  【使用前先看介绍/有问题可反馈】力扣助手 (LeetCode Assistant)：为力扣页面增加辅助功能。
+// @author       cc
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
-// @match        *://leetcode-cn.com/problemset/*
+// @match        https://leetcode-cn.com/problems/*
+// @match        https://leetcode-cn.com/problemset/*
 // @match        *://leetcode-cn.com/company/*/*
 // @match        *://leetcode-cn.com/problem-list/*/*
-
 // @grant        GM_setValue
 // @grant        GM_getValue
 // ==/UserScript==
 // noinspection JSUnresolvedFunction
-
+ 
 (function() {
     const __VERSION__ = '1.0.8';
     let executing = false;
     const bm = new BubbleMessage();
     bm.config.width = 400;
-
+ 
     const config = {
         recommendVisible: false,
+        autoAdjustView: true,
         __hideAnsweredQuestion: false,
         __hideEasy: false,
         __hideMiddle: false,
         __hideHard: false,
+        __supportLanguage: ['Java', 'C++', 'Python3', 'JavaScript'],
     };
-
+ 
     const Basic = {
         updateData: function(obj) {
             let data = GM_getValue('data');
@@ -106,11 +110,11 @@
             }
         }
     };
-
+ 
     const Switch = {
         setSwitch: function(container, id_, onchange, text, defaultChecked) {
             if (defaultChecked === undefined)
-                defaultChecked = false;
+                defaultChecked = true;
             container.style = 'display: inline-flex; align-items: center; margin-left: 10px;';
             let switchCheckbox = document.createElement('input');
             switchCheckbox.type = 'checkbox';
@@ -152,7 +156,6 @@
             });
         },
         switchAnsweredQuestionVisible: function() {
-        	const url = window.location.href;
             let rowGroup = document.querySelector('[role=rowgroup]');
             let nodes = [...rowGroup.querySelectorAll('[role=row]')];
             let matchPage = location.href.match(/\?page=(\d+)/);
@@ -162,30 +165,47 @@
             Switch.switchVisible(nodes, !config.__hideAnsweredQuestion, 'flex');
         },
 
-        switchAnsweredQuestionVisible2: function() {
-        	visible = !config.__hideAnsweredQuestion;
-        	defaultDisplay = 'flex';
-			let svgCollections = document.querySelectorAll(".ant-table-tbody svg");
-		    for (let svg of svgCollections) {
-		        if (svg.getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)") {
-		            const node = Switch.getLevel0ParentNode(0, svg);
-			        if (node != null) {
-			            if (visible) {
-                            if (!(config.__hideEasy && node.children[3].children[0].className === "css-1h8d1g1-Text esow0ct0")){
-                                if (!(config.__hideMiddle && node.children[3].children[0].className === "css-nhmlxf-Text esow0ct0")){
-                                    if (!(config.__hideHard && node.children[3].children[0].className === "css-1qn5q6t-Text esow0ct0")){
-                                        node.style.display = '';
-                                    }
-                                }
+
+
+        
+        switchListAnsweredQuestionVisible: function() {
+            let Count = 0;
+            visible = !config.__hideAnsweredQuestion;
+            defaultDisplay = 'flex';
+            let svgCollections = document.querySelectorAll(".ant-table-tbody svg");
+            for (let svg of svgCollections) {
+                if (svg.getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)") {
+                    const node = Switch.getLevel0ParentNode(0, svg);
+                    if (node != null) {
+                        if (visible) {
+                            if (config.__hideEasy && node.children[3].children[0].className === "css-1h8d1g1-Text esow0ct0"){
+                                continue
                             }
-			            } else {
-			                node.style.display = 'none';
-			            }
-			        }
-		        }
-		    }
+                            if (config.__hideMiddle && node.children[3].children[0].className === "css-nhmlxf-Text esow0ct0"){
+                                continue
+                            }
+                            if (config.__hideHard && node.children[3].children[0].className === "css-1qn5q6t-Text esow0ct0"){
+                                continue
+                            }
+                            node.style.display = '';
+                            Count++;
+                        } else {
+                            node.style.display = 'none';
+                        }
+                    }
+                }
+            }
+            if (Count != 0){
+                bm.message({
+                    type: 'warning',
+                    message: `总共 ${Count} 道已解决问题`,
+                    duration: 1500,
+                });
+            }
+            
         },
         switchEasyVisible: function() {
+            let Count = 0;
             visible = !config.__hideEasy;
             defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-1h8d1g1-Text");
@@ -194,13 +214,22 @@
                 if (node != null) {
                     if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
+                        Count++;
                     } else {
                         node.style.display = 'none';
                     }
                 }
             }
+            if (Count != 0){
+                bm.message({
+                    type: 'warning',
+                    message: `总共 ${Count} 道简单问题`,
+                    duration: 1500,
+                });
+            }
         },
         switchMiddleVisible: function() {
+            let Count = 0;
             visible = !config.__hideMiddle;
             defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-nhmlxf-Text");
@@ -209,13 +238,22 @@
                 if (node != null) {
                     if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
+                        Count++;
                     } else {
                         node.style.display = 'none';
                     }
                 }
             }
+            if (Count != 0){
+                bm.message({
+                    type: 'warning',
+                    message: `总共 ${Count} 道中等问题`,
+                    duration: 1500,
+                });
+            }
         },
         switchHardVisible: function() {
+            let Count = 0;
             visible = !config.__hideHard;
             defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-1qn5q6t-Text");
@@ -224,27 +262,35 @@
                 if (node != null) {
                     if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
+                        Count++;
                     } else {
                         node.style.display = 'none';
                     }
                 }
             }
+            if (Count != 0){
+                bm.message({
+                    type: 'warning',
+                    message: `总共 ${Count} 道困难问题`,
+                    duration: 1500,
+                });
+            }
         },
 
         getLevel0ParentNode : function(depth, node) {
-		    if (!node || depth === 10) {
-		        return null;
-		    }
-		    if (typeof node.className === 'string' && node.className.match("ant-table-row ant-table-row-level-0")) {
-		        return node;
-		    } else if (node.parentNode) {
-		        return Switch.getLevel0ParentNode(depth + 1, node.parentNode);
-		    } else {
-		        return null;
-		    }
-		},
+            if (!node || depth === 10) {
+                return null;
+            }
+            if (typeof node.className === 'string' && node.className.match("ant-table-row ant-table-row-level-0")) {
+                return node;
+            } else if (node.parentNode) {
+                return Switch.getLevel0ParentNode(depth + 1, node.parentNode);
+            } else {
+                return null;
+            }
+        }
     };
-
+ 
     const Insert = {
         base: {
             insertStyle: function() {
@@ -274,8 +320,117 @@
                 document.body.appendChild(textarea);
             }
         },
+        copy: {
+            insertCopyStructCode: function() {
+                const id_ = 'leetcode-assistant-copy-struct-button';
+                if (document.getElementById(id_)) {
+                    executing = false;
+                    return;
+                }
+                let buttonContainer = document.querySelector('[class^=first-section-container]');
+                let ref = buttonContainer.querySelector('button:nth-child(2)');
+                let button = document.createElement('button');
+                button.setAttribute('id', id_);
+                button.className = ref.className;
+                let span = document.createElement('span');
+                span.className = ref.lastElementChild.className;
+                span.innerText = '复制结构';
+                button.appendChild(span);
+                button.addEventListener('click', Copy.copyClassStruct);
+                buttonContainer.appendChild(button);
+                executing = false;
+            },
+            insertCopySubmissionCode: function() {
+                let tbody = document.querySelector('.ant-table-tbody');
+                let trs = [...tbody.querySelectorAll('tr')];
+                let processTr = (tr) => {
+                    let qid = tr.dataset.rowKey;
+                    Basic.executeUtil((tr) => {
+                        let cell = tr.querySelector(':nth-child(4)');
+                        cell.title = '点击复制代码';
+                        cell.style = 'cursor: pointer; color: #007aff';
+                        cell.addEventListener('click', function() {
+                            XHR.requestCode(qid);
+                        });
+                        cell.setAttribute('data-set-copy', 'true');
+                    }, () => {
+                        let cell = tr.querySelector(':nth-child(4)');
+                        return cell && cell.dataset.setCopy !== 'true';
+                    }, [tr]);
+                }
+                trs.forEach(processTr);
+                Fun.highlightBestAcceptSubmission();
+                Basic.observeChildList(tbody, (nodes) => {
+                    let node = nodes[0];
+                    if (node.tagName === 'TR') {
+                        processTr(node);
+                        Fun.highlightBestAcceptSubmission();
+                    }
+                });
+                executing = false;
+            },
+            insertCopyExampleInput: function() {
+                // 检查是否添加 "复制示例代码" 按钮
+                let content = document.querySelector('[data-key=description-content] [class^=content] .notranslate');
+                if (content.dataset.addedCopyExampleInputButton === 'true')
+                    return;
+                // 对每个 example 添加复制按钮
+                let examples = [...content.querySelectorAll('pre')];
+                for (let example of examples) {
+                    let btn = document.createElement('div');
+                    btn.innerText = '复制示例输入';
+                    btn.className = 'leetcode-assistant-copy-example-button';
+                    btn.addEventListener('click', () => {
+                        Copy.copyExampleInput(example);
+                    });
+                    example.appendChild(btn);
+                }
+                content.setAttribute('data-added-copy-example-input-button', 'true');
+                executing = false;
+            },
+            insertCopyTestInput: function() {
+                function addCopyTestInputForInputInfo(inputInfo) {
+                    inputInfo = inputInfo || document.querySelector('[class^=result-container] [class*=ValueContainer]');
+                    if (inputInfo && inputInfo.dataset.setCopy !== 'true') {
+                        inputInfo.addEventListener('click', function() {
+                            // 检查是否支持语言
+                            let lang = Get.getLanguage();
+                            if (!config.__supportLanguage.includes(lang)) {
+                                bm.message({
+                                    type: 'warning',
+                                    message: '目前不支持该语言的测试输入代码复制',
+                                    duration: 1500,
+                                });
+                                executing = false;
+                                return;
+                            }
+                            // 主要代码
+                            let sp = new StatementParser(lang);
+                            let expressions = this.innerText.trim().split('\n');
+                            let declares = sp.getDeclaresFromCode(Get.getCode());
+                            let statements = sp.getStatementsFromDeclaresAndExpressions(declares, expressions);
+                            Copy.copy(statements);
+                        });
+                        inputInfo.setAttribute('data-set-copy', 'true');
+                    }
+                }
+                let submissions = document.querySelector('[class^=submissions]');
+                submissions.addEventListener('DOMNodeInserted', function(event) {
+                    if (event.target.className.startsWith('container') || event.target.className.includes('Container')) {
+                        Basic.executeUtil((container) => {
+                            let inputInfo = container.querySelector('[class*=ValueContainer]');
+                            addCopyTestInputForInputInfo(inputInfo);
+                        }, () => {
+                            return event.target.querySelector('[class*=ValueContainer]');
+                        }, [event.target]);
+                    }
+                });
+                addCopyTestInputForInputInfo();
+                executing = false;
+            },
+        },
         switch: {
-            insertHideAnsweredQuestionSwitchCompany: function() {
+                        insertHideListAnsweredQuestionSwitch: function() {
                 const id_ = 'leetcode-assistant-hide-answered-question-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
@@ -284,7 +439,7 @@
                 let container = document.querySelector('.css-1hthjdu-NavbarList');
                 let onchange = function() {
                     config.__hideAnsweredQuestion = !config.__hideAnsweredQuestion;
-                    Switch.switchAnsweredQuestionVisible2();
+                    Switch.switchListAnsweredQuestionVisible();
                 };
                 let text = '隐藏已解决';
                 Switch.setSwitch(container, id_, onchange, text, false);
@@ -384,7 +539,7 @@
                 executing = false;
             },
 
-            // 首页
+
             insertRecommendVisibleSwitch: function() {
                 const id_ = 'leetcode-assistant-recommend-visible-switch';
                 if (document.getElementById(id_)) {
@@ -425,13 +580,239 @@
                     });
                 });
                 executing = false;
+            },
+            insertAutoAdjustViewSwitch: function() {
+                const id_ = 'leetcode-assistant-auto-adjust-view-switch';
+                if (document.getElementById(id_)) {
+                    executing = false;
+                    return;
+                }
+                let container = document.querySelector('[data-status] nav > ul');
+                let onchange = function() {
+                    Basic.updateData({ autoAdjustView: this.checked });
+                };
+                let text = '自动调节视图';
+                Switch.setSwitch(container, id_, onchange, text);
+                executing = false;
             }
         }
     };
-
+ 
+    const Copy = {
+        copy: function(value) {
+            let textarea = document.getElementById('leetcode-assistant-textarea');
+            textarea.value = value;
+            textarea.setAttribute('value', value);
+            textarea.select();
+            document.execCommand('copy');
+            bm.message({
+                type: 'success',
+                message: '复制成功',
+                duration: 1500,
+            });
+        },
+        copyClassStruct: function() {
+            // 检查语言是否支持
+            let lang = Get.getLanguage();
+            if (!config.__supportLanguage.includes(lang)) {
+                bm.message({
+                    type: 'warning',
+                    message: '目前不支持该语言的结构类代码复制',
+                    duration: 1500,
+                });
+                executing = false;
+                return;
+            }
+            // 主要代码
+            let sp = new StatementParser(lang);
+            let classStructCode = sp.getClassStructFromCode(Get.getCode());
+            if (!classStructCode) {
+                bm.message({
+                    type: 'warning',
+                    message: '结构类代码不存在',
+                    duration: 1500,
+                });
+                return;
+            }
+            Copy.copy(classStructCode);
+        },
+        copyExampleInput: function(example) {
+            // 检查语言是否支持
+            let lang = Get.getLanguage();
+            if (!config.__supportLanguage.includes(lang)) {
+                bm.message({
+                    type: 'warning',
+                    message: '目前不支持该语言的示例输入代码复制',
+                    duration: 1500,
+                });
+                executing = false;
+                return;
+            }
+            let sp = new StatementParser(lang);
+            // 获取 declares
+            let declares = sp.getDeclaresFromCode(Get.getCode());
+            // 获取 expressions
+            let strong = example.querySelector('strong');
+            let inputText = "";
+            if (strong && strong.nextSibling) {
+                let inputTextElement = strong.nextSibling;
+                while ((inputTextElement instanceof Text) || !['STRONG', 'B'].includes(inputTextElement.tagName)) {
+                    if (inputTextElement instanceof Text) {
+                        inputText += inputTextElement.wholeText;
+                    } else {
+                        inputText += inputTextElement.innerText;
+                    }
+                    inputTextElement = inputTextElement.nextSibling;
+                }
+            } else {
+                inputText = example.innerText.replace(/\n/g, '').match(/输入:(.+)输出:/)[1];
+            }
+            let expressions = inputText.trim().replace(/,$/, '');
+            if (inputText.replace(/".+?"/g, '').includes(',')) {
+                // 无视字符串后存在逗号分隔符，说明有多个输入
+                expressions = expressions.split(/,\s+/);
+            } else {
+                // 单个输入
+                expressions = [expressions];
+            }
+            // 生成语句并复制
+            Copy.copy(sp.getStatementsFromDeclaresAndExpressions(declares, expressions));
+        },
+    };
+ 
+    const XHR = {
+        requestCode: function(qid) {
+            let query = `
+                query mySubmissionDetail($id: ID!) {
+                  submissionDetail(submissionId: $id) {
+                    id
+                    code
+                    runtime
+                    memory
+                    rawMemory
+                    statusDisplay
+                    timestamp
+                    lang
+                    passedTestCaseCnt
+                    totalTestCaseCnt
+                    sourceUrl
+                    question {
+                      titleSlug
+                      title
+                      translatedTitle
+                      questionId
+                      __typename
+                    }
+                    ... on GeneralSubmissionNode {
+                      outputDetail {
+                        codeOutput
+                        expectedOutput
+                        input
+                        compileError
+                        runtimeError
+                        lastTestcase
+                        __typename
+                      }
+                      __typename
+                    }
+                    submissionComment {
+                      comment
+                      flagType
+                      __typename
+                    }
+                    __typename
+                  }
+                }`;
+            $.ajax({
+                url: 'https://leetcode-cn.com/graphql/',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    operationName: 'mySubmissionDetail',
+                    query: query,
+                    variables: {
+                        id: qid
+                    },
+                }),
+            }).then(res => {
+                Copy.copy(res.data.submissionDetail.code);
+            });
+        }
+    };
+ 
+    const Get = {
+        getLanguage: function() {
+            return document.getElementById('lang-select').innerText;
+        },
+        getCode: function() {
+            return document.querySelector('[name=code]').value;
+        }
+    };
+ 
+    const Fun = {
+        adjustViewScale: function(left, right) {
+            if (!config.autoAdjustView) {
+                executing = false;
+                return;
+            }
+            let splitLine = document.querySelector('[data-is-collapsed]');
+            let leftPart = splitLine.previousElementSibling;
+            let rightPart = splitLine.nextElementSibling;
+            let leftPartFlex = leftPart.style.flex.match(/\d+\.\d+/)[0];
+            let rightPartFlex = rightPart.style.flex.match(/\d+\.\d+/)[0];
+            leftPart.style.flex = leftPart.style.flex.replace(leftPartFlex, `${left}`);
+            rightPart.style.flex = rightPart.style.flex.replace(rightPartFlex, `${right}`);
+            executing = false;
+        },
+        highlightBestAcceptSubmission: function() {
+            let highlightClassName = 'leetcode-assistant-highlight-accept-submission';
+            let items = [...document.querySelectorAll('tr[data-row-key]')];
+            let acItems = items.filter(item => item.querySelector('a[class^=ac]'));
+            if (acItems.length === 0)
+                return;
+            let matchTimeMem = acItems.map(item => item.innerText.match(/(\d+)\sms.+?(\d+\.?\d)\sMB/).slice(1, 3));
+            let timeList = matchTimeMem.map(res => parseInt(res[0]));
+            let memList = matchTimeMem.map(res => parseFloat(res[1]));
+            let targetIndex = 0;
+            for (let i = 0; i < items.length; i++) {
+                if (timeList[i] < timeList[targetIndex] || (timeList[i] === timeList[targetIndex] && memList[i] < memList[targetIndex])) {
+                    targetIndex = i;
+                }
+            }
+            let lastTarget = document.querySelector(`.${highlightClassName}`);
+            if (lastTarget)
+                lastTarget.classList.remove(highlightClassName);
+            acItems[targetIndex].classList.add(highlightClassName);
+        }
+    };
+ 
     function main() {
         console.log(`LeetCode Assistant version ${__VERSION__}`);
-        if (location.href.startsWith('https://leetcode-cn.com/problemset/')) { // 首页
+        if (location.href.match(/\/problems\/[a-zA-Z0-9\-]+\//)) { // /problems/*
+            Basic.executeUtil(() => {
+                Insert.copy.insertCopyStructCode();
+                Insert.switch.insertAutoAdjustViewSwitch();
+            }, () => {
+                return document.querySelector('[class^=first-section-container]');
+            });
+            if (location.href.match(/\/problems\/[a-zA-Z0-9\-]+\/$/)) { // 题目描述
+                Fun.adjustViewScale(0.618, 0.382);
+                Basic.executeUtil(Insert.copy.insertCopyExampleInput, () => {
+                    let codeDOM = document.querySelector('.editor-scrollable');
+                    let content = document.querySelector('[data-key=description-content] [class^=content] .notranslate');
+                    return codeDOM && content && content.querySelector('pre');
+                });
+            } else if (location.href.includes('/solution/')) { // 题解
+                Fun.adjustViewScale(0.382, 0.618);
+            } else if (location.href.includes('/submissions/')) { // 提交记录
+                Basic.executeUtil(() => {
+                    Insert.copy.insertCopySubmissionCode();
+                    Insert.copy.insertCopyTestInput();
+                }, () => {
+                    return document.querySelector('.ant-table-thead');
+                });
+            }
+        } else if (location.href.startsWith('https://leetcode-cn.com/problemset/')) { // 首页
             Insert.switch.insertRecommendVisibleSwitch();
             Switch.switchRecommendVisible();
             Basic.executeUtil(() => {
@@ -443,8 +824,8 @@
             });
         } else if (location.href.startsWith('https://leetcode-cn.com/company/') || location.href.startsWith('https://leetcode-cn.com/problem-list/')) { // company和problem-list
             Basic.executeUtil(() => {
-                Insert.switch.insertHideAnsweredQuestionSwitchCompany();
-        		Switch.switchAnsweredQuestionVisible2();
+                Insert.switch.insertHideListAnsweredQuestionSwitch();
+                Switch.switchListAnsweredQuestionVisible();
                 Insert.switch.insertHideEasySwitch();
                 Switch.switchEasyVisible();
                 Insert.switch.insertHideMiddleSwitch();
@@ -459,7 +840,7 @@
             executing = false;
         }
     }
-
+ 
     window.addEventListener('load', () => {
         Basic.updateData();
         Insert.base.insertStyle();
