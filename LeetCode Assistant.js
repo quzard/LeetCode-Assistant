@@ -5,7 +5,7 @@
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
-// @match        https://leetcode-cn.com/problems/*
+// @match        https://leetcode-cn.com/problemss/*
 // @match        https://leetcode-cn.com/problemset/*
 // @match        *://leetcode-cn.com/company/*/*
 // @match        *://leetcode-cn.com/problem-list/*/*
@@ -24,6 +24,7 @@
         recommendVisible: false,
         autoAdjustView: true,
         __hideAnsweredQuestion: false,
+        __hideCollectionAnsweredQuestion: false,
         __hideEasy: false,
         __hideMiddle: false,
         __hideHard: false,
@@ -168,7 +169,7 @@
 
         switchCollectionAnsweredQuestionVisible: function() {
             let Count = 0;
-            visible = !config.__hideAnsweredQuestion;
+            visible = !config.__hideCollectionAnsweredQuestion;
             let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
             nodes = nodes.filter(node => {
                 let svg = node.querySelector('svg');
@@ -208,7 +209,7 @@
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
                 if (node != null) {
-                    if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
+                    if (visible && !(config.__hideCollectionAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
                         Count++;
                     } else {
@@ -231,7 +232,7 @@
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
                 if (node != null) {
-                    if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
+                    if (visible && !(config.__hideCollectionAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
                         Count++;
                     } else {
@@ -254,7 +255,7 @@
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
                 if (node != null) {
-                    if (visible && !(config.__hideAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
+                    if (visible && !(config.__hideCollectionAnsweredQuestion && node.children[0].children[0].children[0].getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)")) {
                         node.style.display = '';
                         Count++;
                     } else {
@@ -433,7 +434,7 @@
                 let container = document.createElement('div');
                 document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
                 let onchange = function() {
-                    config.__hideAnsweredQuestion = !config.__hideAnsweredQuestion;
+                    config.__hideCollectionAnsweredQuestion = !config.__hideCollectionAnsweredQuestion;
                     Switch.switchCollectionAnsweredQuestionVisible();
                 };
                 let text = '隐藏已解决';
@@ -475,8 +476,8 @@
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideCollectionAnsweredQuestion = false;
-                            Switch.switchCollectionAnsweredQuestionVisible();
+                            config.__hideEasy = false;
+                            Switch.switchEasyVisible();
                             return true;
                         });
                     });
@@ -506,8 +507,8 @@
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideCollectionAnsweredQuestion = false;
-                            Switch.switchCollectionAnsweredQuestionVisible();
+                            config.__hideMiddle = false;
+                            Switch.switchMiddleVisible();
                             return true;
                         });
                     });
@@ -537,8 +538,8 @@
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideCollectionAnsweredQuestion = false;
-                            Switch.switchCollectionAnsweredQuestionVisible();
+                            config.__hideHard = false;
+                            Switch.switchHardVisible();
                             return true;
                         });
                     });
