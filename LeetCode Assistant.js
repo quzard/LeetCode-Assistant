@@ -719,7 +719,7 @@
                     Basic.updateData({ recommendVisible: !this.checked });
                     Switch.switchRecommendVisible();
                 };
-                let text = '简洁模式';
+                let text = '简洁';
                 Switch.setSwitch(container, id_, onchange, text);
                 executing = false;
             },
@@ -737,7 +737,7 @@
                     config.__hideAnsweredQuestion = !config.__hideAnsweredQuestion;
                     Switch.switchAnsweredQuestionVisible();
                 };
-                let text = '隐藏已解决';
+                let text = '隐藏解决';
                 Switch.setSwitch(container, id_, onchange, text, false);
                 let navigation = document.querySelector('[role=navigation]');
                 let btns = [...navigation.querySelectorAll('button')];
@@ -791,7 +791,7 @@
                     config.__hideMiddleQuestion = !config.__hideMiddleQuestion;
                     Switch.switchMiddleQuestionVisible();
                 };
-                let text = '隐藏中等问题';
+                let text = '隐藏中等';
                 Switch.setSwitch(container, id_, onchange, text, false);
                 let navigation = document.querySelector('[role=navigation]');
                 let btns = [...navigation.querySelectorAll('button')];
