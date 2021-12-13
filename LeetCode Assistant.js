@@ -1,9 +1,7 @@
 // ==UserScript==
 // @name         LeetCode Assistant
 // @namespace    http://tampermonkey.net/
-// @version      1.0.8
-// @description  【使用前先看介绍/有问题可反馈】力扣助手 (LeetCode Assistant)：为力扣页面增加辅助功能。
-// @author       cc
+// @version      1.0.9
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
@@ -15,13 +13,13 @@
 // @grant        GM_getValue
 // ==/UserScript==
 // noinspection JSUnresolvedFunction
- 
+
 (function() {
-    const __VERSION__ = '1.0.8';
+    const __VERSION__ = '1.0.9';
     let executing = false;
     const bm = new BubbleMessage();
     bm.config.width = 400;
- 
+
     const config = {
         recommendVisible: false,
         autoAdjustView: true,
@@ -31,7 +29,7 @@
         __hideHard: false,
         __supportLanguage: ['Java', 'C++', 'Python3', 'JavaScript'],
     };
- 
+
     const Basic = {
         updateData: function(obj) {
             let data = GM_getValue('data');
@@ -110,7 +108,7 @@
             }
         }
     };
- 
+
     const Switch = {
         setSwitch: function(container, id_, onchange, text, defaultChecked) {
             if (defaultChecked === undefined)
@@ -167,47 +165,45 @@
 
 
 
-        
-        switchListAnsweredQuestionVisible: function() {
+
+        switchCollectionAnsweredQuestionVisible: function() {
             let Count = 0;
             visible = !config.__hideAnsweredQuestion;
-            defaultDisplay = 'flex';
-            let svgCollections = document.querySelectorAll(".ant-table-tbody svg");
-            for (let svg of svgCollections) {
-                if (svg.getAttribute("color") === "rgba(var(--dsw-success-rgb), 1)") {
-                    const node = Switch.getLevel0ParentNode(0, svg);
-                    if (node != null) {
-                        if (visible) {
-                            if (config.__hideEasy && node.children[3].children[0].className === "css-1h8d1g1-Text esow0ct0"){
-                                continue
-                            }
-                            if (config.__hideMiddle && node.children[3].children[0].className === "css-nhmlxf-Text esow0ct0"){
-                                continue
-                            }
-                            if (config.__hideHard && node.children[3].children[0].className === "css-1qn5q6t-Text esow0ct0"){
-                                continue
-                            }
-                            node.style.display = '';
-                            Count++;
-                        } else {
-                            node.style.display = 'none';
-                        }
+            let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
+            nodes = nodes.filter(node => {
+                let svg = node.querySelector('svg');
+                return svg.getAttribute('color').includes('success');
+            });
+            for (let node of nodes){
+                if (visible) {
+                    if (config.__hideEasy && node.children[3].children[0].className === "css-1h8d1g1-Text esow0ct0"){
+                        continue
                     }
+                    if (config.__hideMiddle && node.children[3].children[0].className === "css-nhmlxf-Text esow0ct0"){
+                        continue
+                    }
+                    if (config.__hideHard && node.children[3].children[0].className === "css-1qn5q6t-Text esow0ct0"){
+                        continue
+                    }
+                    node.style.display = '';
+                    Count++;
+                } else {
+                    node.style.display = 'none';
                 }
             }
+
             if (Count != 0){
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道已解决问题`,
-                    duration: 1500,
+                    duration: 100,
                 });
             }
-            
+
         },
         switchEasyVisible: function() {
             let Count = 0;
             visible = !config.__hideEasy;
-            defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-1h8d1g1-Text");
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
@@ -224,14 +220,13 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道简单问题`,
-                    duration: 1500,
+                    duration: 100,
                 });
             }
         },
         switchMiddleVisible: function() {
             let Count = 0;
             visible = !config.__hideMiddle;
-            defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-nhmlxf-Text");
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
@@ -248,14 +243,13 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道中等问题`,
-                    duration: 1500,
+                    duration: 100,
                 });
             }
         },
         switchHardVisible: function() {
             let Count = 0;
             visible = !config.__hideHard;
-            defaultDisplay = 'flex';
             let questions = document.querySelectorAll(".css-1qn5q6t-Text");
             for (let question of questions) {
                 const node = Switch.getLevel0ParentNode(0, question);
@@ -272,7 +266,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道困难问题`,
-                    duration: 1500,
+                    duration: 100,
                 });
             }
         },
@@ -290,7 +284,7 @@
             }
         }
     };
- 
+
     const Insert = {
         base: {
             insertStyle: function() {
@@ -430,31 +424,35 @@
             },
         },
         switch: {
-                        insertHideListAnsweredQuestionSwitch: function() {
+            insertHideCollectionAnsweredQuestionSwitch: function() {
                 const id_ = 'leetcode-assistant-hide-answered-question-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
                     return;
                 }
-                let container = document.querySelector('.css-1hthjdu-NavbarList');
+                let container = document.createElement('div');
+                document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
                 let onchange = function() {
                     config.__hideAnsweredQuestion = !config.__hideAnsweredQuestion;
-                    Switch.switchListAnsweredQuestionVisible();
+                    Switch.switchCollectionAnsweredQuestionVisible();
                 };
                 let text = '隐藏已解决';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                let navigation = document.querySelector('[class="ant-pagination ant-table-pagination ant-table-pagination-right"]');
-                if (navigation) {
-                    let btns = [...navigation.querySelectorAll('button')];
+                Basic.executeUtil(() => {
+                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
+                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
-                        btn.addEventListener("click", function() {
+                        btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideHard = false;
-                            Switch.switchHardVisible();
+                            config.__hideCollectionAnsweredQuestion = false;
+                            Switch.switchCollectionAnsweredQuestionVisible();
                             return true;
                         });
                     });
-                };
+                }, () => {
+                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
+                    return btns.length > 0;
+                });
                 executing = false;
             },
             insertHideEasySwitch: function() {
@@ -463,25 +461,29 @@
                     executing = false;
                     return;
                 }
-                let container = document.querySelector('.css-1hthjdu-NavbarList');
+                let container = document.createElement('div');
+                document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
                 let onchange = function() {
                     config.__hideEasy = !config.__hideEasy;
                     Switch.switchEasyVisible();
                 };
                 let text = '隐藏简单问题';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                let navigation = document.querySelector('[class="ant-pagination ant-table-pagination ant-table-pagination-right"]');
-                if (navigation) {
-                    let btns = [...navigation.querySelectorAll('button')];
+                Basic.executeUtil(() => {
+                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
+                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
-                        btn.addEventListener("click", function() {
+                        btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideHard = false;
-                            Switch.switchHardVisible();
+                            config.__hideCollectionAnsweredQuestion = false;
+                            Switch.switchCollectionAnsweredQuestionVisible();
                             return true;
                         });
                     });
-                };
+                }, () => {
+                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
+                    return btns.length > 0;
+                });
                 executing = false;
             },
             insertHideMiddleSwitch: function() {
@@ -490,25 +492,29 @@
                     executing = false;
                     return;
                 }
-                let container = document.querySelector('.css-1hthjdu-NavbarList');
+                let container = document.createElement('div');
+                document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
                 let onchange = function() {
                     config.__hideMiddle = !config.__hideMiddle;
                     Switch.switchMiddleVisible();
                 };
                 let text = '隐藏中等问题';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                let navigation = document.querySelector('[class="ant-pagination ant-table-pagination ant-table-pagination-right"]');
-                if (navigation) {
-                    let btns = [...navigation.querySelectorAll('button')];
+                Basic.executeUtil(() => {
+                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
+                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
-                        btn.addEventListener("click", function() {
+                        btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideHard = false;
-                            Switch.switchHardVisible();
+                            config.__hideCollectionAnsweredQuestion = false;
+                            Switch.switchCollectionAnsweredQuestionVisible();
                             return true;
                         });
                     });
-                };
+                }, () => {
+                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
+                    return btns.length > 0;
+                });
                 executing = false;
             },
             insertHideHardSwitch: function() {
@@ -517,25 +523,29 @@
                     executing = false;
                     return;
                 }
-                let container = document.querySelector('.css-1hthjdu-NavbarList');
+                let container = document.createElement('div');
+                document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
                 let onchange = function() {
                     config.__hideHard = !config.__hideHard;
                     Switch.switchHardVisible();
                 };
                 let text = '隐藏困难问题';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                let navigation = document.querySelector('[class="ant-pagination ant-table-pagination ant-table-pagination-right"]');
-                if (navigation) {
-                    let btns = [...navigation.querySelectorAll('button')];
+                Basic.executeUtil(() => {
+                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
+                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
-                        btn.addEventListener("click", function() {
+                        btn.addEventListener('click', function() {
                             document.getElementById(id_).checked = false;
-                            config.__hideHard = false;
-                            Switch.switchHardVisible();
+                            config.__hideCollectionAnsweredQuestion = false;
+                            Switch.switchCollectionAnsweredQuestionVisible();
                             return true;
                         });
                     });
-                };
+                }, () => {
+                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
+                    return btns.length > 0;
+                });
                 executing = false;
             },
 
@@ -597,7 +607,7 @@
             }
         }
     };
- 
+
     const Copy = {
         copy: function(value) {
             let textarea = document.getElementById('leetcode-assistant-textarea');
@@ -679,7 +689,7 @@
             Copy.copy(sp.getStatementsFromDeclaresAndExpressions(declares, expressions));
         },
     };
- 
+
     const XHR = {
         requestCode: function(qid) {
             let query = `
@@ -739,7 +749,7 @@
             });
         }
     };
- 
+
     const Get = {
         getLanguage: function() {
             return document.getElementById('lang-select').innerText;
@@ -748,7 +758,7 @@
             return document.querySelector('[name=code]').value;
         }
     };
- 
+
     const Fun = {
         adjustViewScale: function(left, right) {
             if (!config.autoAdjustView) {
@@ -785,7 +795,7 @@
             acItems[targetIndex].classList.add(highlightClassName);
         }
     };
- 
+
     function main() {
         console.log(`LeetCode Assistant version ${__VERSION__}`);
         if (location.href.match(/\/problems\/[a-zA-Z0-9\-]+\//)) { // /problems/*
@@ -823,9 +833,13 @@
                 return navigation && navigation.innerText.length > 0;
             });
         } else if (location.href.startsWith('https://leetcode-cn.com/company/') || location.href.startsWith('https://leetcode-cn.com/problem-list/')) { // company和problem-list
+            Insert.switch.insertHideCollectionAnsweredQuestionSwitch();
+            Insert.switch.insertHideEasySwitch();
+            Insert.switch.insertHideMiddleSwitch();
+            Insert.switch.insertHideHardSwitch();
             Basic.executeUtil(() => {
-                Insert.switch.insertHideListAnsweredQuestionSwitch();
-                Switch.switchListAnsweredQuestionVisible();
+                Insert.switch.insertHideCollectionAnsweredQuestionSwitch();
+                Switch.switchCollectionAnsweredQuestionVisible();
                 Insert.switch.insertHideEasySwitch();
                 Switch.switchEasyVisible();
                 Insert.switch.insertHideMiddleSwitch();
@@ -833,14 +847,14 @@
                 Insert.switch.insertHideHardSwitch();
                 Switch.switchHardVisible();
             }, () => {
-                let data = document.querySelector('[class="ant-table-row ant-table-row-level-0"]');
-                return data;
+                let navigation = document.querySelector('#lc-header>nav>ul');
+                return navigation && navigation.childElementCount > 0;
             });
         } else {
             executing = false;
         }
     }
- 
+
     window.addEventListener('load', () => {
         Basic.updateData();
         Insert.base.insertStyle();
