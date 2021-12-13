@@ -5,7 +5,7 @@
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
-// @match        https://leetcode-cn.com/problemss/*
+// @match        https://leetcode-cn.com/problems/*
 // @match        https://leetcode-cn.com/problemset/*
 // @match        *://leetcode-cn.com/company/*/*
 // @match        *://leetcode-cn.com/problem-list/*/*
