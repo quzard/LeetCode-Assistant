@@ -188,7 +188,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道已解决问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -215,7 +215,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道简单问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -242,7 +242,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道中等问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -269,7 +269,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道困难问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -309,7 +309,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道已解决问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
 
@@ -333,7 +333,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道简单问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -356,7 +356,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道中等问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -379,7 +379,7 @@
                 bm.message({
                     type: 'warning',
                     message: `总共 ${Count} 道困难问题`,
-                    duration: 100,
+                    duration: 10,
                 });
             }
         },
@@ -557,8 +557,8 @@
                 }
                 let container = document.querySelector('.css-1hthjdu-NavbarList');
                 let onchange = function() {
-                    config.__hideAnsweredQuestion = !config.__hideAnsweredQuestion;
-                    Switch.switchListAnsweredQuestionVisible();
+                    config.__hideCollectionAnsweredQuestion = !config.__hideCollectionAnsweredQuestion;
+                    Switch.switchCollectionAnsweredQuestionVisible();
                 };
                 let text = '隐藏已解决';
 
@@ -568,15 +568,15 @@
                     btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
-                            document.getElementById(id_).checked = false;
-                            config.__hideCollectionAnsweredQuestion = false;
-                            Switch.switchCollectionAnsweredQuestionVisible();
+                            setTimeout(function(){ 
+                                Switch.switchCollectionAnsweredQuestionVisible();
+                            }, 10);  
                             return true;
                         });
                     });
                 }, () => {
-                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
-                    return btns.length > 0;
+                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
+                    return nodes.length > 0;
                 });
                 executing = false;
             },
@@ -610,15 +610,15 @@
                     btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
-                            document.getElementById(id_).checked = false;
-                            config.__hideEasy = false;
-                            Switch.switchEasyVisible();
+                            setTimeout(function(){ 
+                                Switch.switchEasyVisible();
+                            }, 10); 
                             return true;
                         });
                     });
                 }, () => {
-                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
-                    return btns.length > 0;
+                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
+                    return nodes.length > 0;
                 });
                 executing = false;
             },
@@ -652,15 +652,15 @@
                     btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
-                            document.getElementById(id_).checked = false;
-                            config.__hideMiddle = false;
-                            Switch.switchMiddleVisible();
+                            setTimeout(function(){ 
+                                Switch.switchMiddleVisible();
+                            }, 10); 
                             return true;
                         });
                     });
                 }, () => {
-                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
-                    return btns.length > 0;
+                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
+                    return nodes.length > 0;
                 });
                 executing = false;
             },
@@ -694,15 +694,15 @@
                     btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
-                            document.getElementById(id_).checked = false;
-                            config.__hideHard = false;
-                            Switch.switchHardVisible();
+                            setTimeout(function(){ 
+                                Switch.switchHardVisible();
+                            }, 10); 
                             return true;
                         });
                     });
                 }, () => {
-                    let btns = [...document.querySelectorAll('.ant-pagination-item')];
-                    return btns.length > 0;
+                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
+                    return nodes.length > 0;
                 });
                 executing = false;
             },
