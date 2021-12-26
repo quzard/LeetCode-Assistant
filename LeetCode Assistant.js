@@ -538,18 +538,6 @@
         },
         switch: {
             insertHideCollectionAnsweredQuestionSwitch: function() {
-                // const id_ = 'leetcode-assistant-hide-answered-question-switch';
-                // if (document.getElementById(id_)) {
-                //     executing = false;
-                //     return;
-                // }
-                // let container = document.createElement('div');
-                // document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
-                // let onchange = function() {
-                //     config.__hideCollectionAnsweredQuestion = !config.__hideCollectionAnsweredQuestion;
-                //     Switch.switchCollectionAnsweredQuestionVisible();
-                // };
-                // let text = '隐藏已解决';
                 const id_ = 'leetcode-assistant-hide-answered-question-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
@@ -566,10 +554,14 @@
                 Basic.executeUtil(() => {
                     let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
                     btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
+                    btns = btns.concat([...document.querySelectorAll('[class="ant-table-cell ant-table-column-has-sorters"]')]);
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
                             setTimeout(function(){ 
                                 Switch.switchCollectionAnsweredQuestionVisible();
+                                Switch.switchEasyVisible();
+                                Switch.switchMiddleVisible();
+                                Switch.switchHardVisible();
                             }, 10);  
                             return true;
                         });
@@ -581,18 +573,6 @@
                 executing = false;
             },
             insertHideEasySwitch: function() {
-                // const id_ = 'leetcode-assistant-hide-easy-switch';
-                // if (document.getElementById(id_)) {
-                //     executing = false;
-                //     return;
-                // }
-                // let container = document.createElement('div');
-                // document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
-                // let onchange = function() {
-                //     config.__hideEasy = !config.__hideEasy;
-                //     Switch.switchEasyVisible();
-                // };
-                // let text = '隐藏简单问题';
                 const id_ = 'leetcode-assistant-hide-easy-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
@@ -605,36 +585,9 @@
                 };
                 let text = '隐藏简单';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                Basic.executeUtil(() => {
-                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
-                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
-                    btns.forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            setTimeout(function(){ 
-                                Switch.switchEasyVisible();
-                            }, 10); 
-                            return true;
-                        });
-                    });
-                }, () => {
-                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
-                    return nodes.length > 0;
-                });
                 executing = false;
             },
             insertHideMiddleSwitch: function() {
-                // const id_ = 'leetcode-assistant-hide-middle-switch';
-                // if (document.getElementById(id_)) {
-                //     executing = false;
-                //     return;
-                // }
-                // let container = document.createElement('div');
-                // document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
-                // let onchange = function() {
-                //     config.__hideMiddle = !config.__hideMiddle;
-                //     Switch.switchMiddleVisible();
-                // };
-                // let text = '隐藏中等问题';
                 const id_ = 'leetcode-assistant-hide-middle-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
@@ -647,36 +600,9 @@
                 };
                 let text = '隐藏中等';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                Basic.executeUtil(() => {
-                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
-                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
-                    btns.forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            setTimeout(function(){ 
-                                Switch.switchMiddleVisible();
-                            }, 10); 
-                            return true;
-                        });
-                    });
-                }, () => {
-                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
-                    return nodes.length > 0;
-                });
                 executing = false;
             },
             insertHideHardSwitch: function() {
-                // const id_ = 'leetcode-assistant-hide-hard-switch';
-                // if (document.getElementById(id_)) {
-                //     executing = false;
-                //     return;
-                // }
-                // let container = document.createElement('div');
-                // document.querySelector('#lc-header>nav>ul:first-child').appendChild(container);
-                // let onchange = function() {
-                //     config.__hideHard = !config.__hideHard;
-                //     Switch.switchHardVisible();
-                // };
-                // let text = '隐藏困难问题';
                 const id_ = 'leetcode-assistant-hide-hard-switch';
                 if (document.getElementById(id_)) {
                     executing = false;
@@ -689,23 +615,13 @@
                 };
                 let text = '隐藏困难';
                 Switch.setSwitch(container, id_, onchange, text, false);
-                Basic.executeUtil(() => {
-                    let btns = [...document.querySelectorAll('.ant-table-pagination li>*')];
-                    btns = btns.filter(btn => btn.tagName === 'BUTTON' || btn.tagName === 'A');
-                    btns.forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            setTimeout(function(){ 
-                                Switch.switchHardVisible();
-                            }, 10); 
-                            return true;
-                        });
-                    });
-                }, () => {
-                    let nodes = [...document.querySelectorAll('.ant-table-tbody>tr')];
-                    return nodes.length > 0;
-                });
                 executing = false;
             },
+
+
+
+
+
 
 
             insertRecommendVisibleSwitch: function() {
