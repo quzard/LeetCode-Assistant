@@ -557,12 +557,12 @@
                     btns = btns.concat([...document.querySelectorAll('[class="ant-table-cell ant-table-column-has-sorters"]')]);
                     btns.forEach(btn => {
                         btn.addEventListener('click', function() {
-                            setTimeout(function(){ 
+                            setTimeout(function(){
                                 Switch.switchCollectionAnsweredQuestionVisible();
                                 Switch.switchEasyVisible();
                                 Switch.switchMiddleVisible();
                                 Switch.switchHardVisible();
-                            }, 10);  
+                            }, 10);
                             return true;
                         });
                     });
