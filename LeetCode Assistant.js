@@ -1,14 +1,15 @@
 // ==UserScript==
 // @name         LeetCode Assistant
 // @namespace    http://tampermonkey.net/
-// @version      1.0.9
+// @version      1.0.10
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
-// @match        https://leetcode-cn.com/problems/*
-// @match        https://leetcode-cn.com/problemset/*
-// @match        *://leetcode-cn.com/company/*/*
-// @match        *://leetcode-cn.com/problem-list/*/*
+// @match        https://leetcode.cn/problemss/*
+// @match        https://leetcode.cn/problemset/*
+// @match        *://leetcode.cn/company/*/*
+// @match        *://leetcode.cn/problem-list/*/*
+// @match        *://leetcode.cn/tag/*/*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // ==/UserScript==
@@ -900,7 +901,7 @@
                   }
                 }`;
             $.ajax({
-                url: 'https://leetcode-cn.com/graphql/',
+                url: 'https://leetcode.cn/graphql/',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
@@ -988,7 +989,7 @@
                     return document.querySelector('.ant-table-thead');
                 });
             }
-        } else if (location.href.startsWith('https://leetcode-cn.com/problemset/')) { // 首页
+        } else if (location.href.startsWith('https://leetcode.cn/problemset/')) { // 首页
             Insert.switch.insertRecommendVisibleSwitch();
             Switch.switchRecommendVisible();
             Basic.executeUtil(() => {
@@ -1004,7 +1005,7 @@
                 let navigation = document.querySelector('[role=navigation]');
                 return navigation && navigation.innerText.length > 0;
             });
-        } else if (location.href.startsWith('https://leetcode-cn.com/company/') || location.href.startsWith('https://leetcode-cn.com/problem-list/')) { // company和problem-list
+        } else if (location.href.startsWith('https://leetcode.cn/company/') || location.href.startsWith('https://leetcode.cn/problem-list/')) { // company和problem-list
             Insert.switch.insertHideCollectionAnsweredQuestionSwitch();
             Insert.switch.insertHideEasySwitch();
             Insert.switch.insertHideMiddleSwitch();
