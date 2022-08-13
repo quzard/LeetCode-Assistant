@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LeetCode Assistant
 // @namespace    http://tampermonkey.net/
-// @version      1.0.10
+// @version      1.0.11
 // @require      https://cdn.bootcss.com/jquery/3.4.1/jquery.js
 // @require      https://greasyfork.org/scripts/422854-bubble-message.js
 // @require      https://greasyfork.org/scripts/432416-statement-parser.js
